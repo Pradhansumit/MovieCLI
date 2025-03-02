@@ -1,5 +1,5 @@
 [project]
-name = "Movie_API"
+name = "MovieCLI"
 version = "0.1.0"
 description = "Calls themoviedb apis to get information about movies and its related."
 authors = [
@@ -8,10 +8,15 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "click (>=8.1.8,<9.0.0)"
+    "click (>=8.1.8,<9.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "cryptography (>=44.0.1,<45.0.0)",
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[project.scripts]
+moviecli = "moviecli:cli"
