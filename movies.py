@@ -1,9 +1,12 @@
+import os
+
 import click
 import requests as req
 
 import apikey
 
-base_url: str = "http://www.omdbapi.com/"
+BASE_URL: str = "http://www.omdbapi.com/"
+EXPORT_PATH: str = os.path.join(apikey.ROOT_FOLDER, "file-history.csv")
 
 
 @click.command()
@@ -16,7 +19,14 @@ base_url: str = "http://www.omdbapi.com/"
     default="short",
     help="Plot length: (short|full)",
 )
-def movie_info(title: str, year: int, plot: str = "short") -> None:
+@click.option(
+    "-e",
+    "--export",
+    type=click.Choice(["true", "false"]),
+    default="false",
+    help="To export data",
+)
+def info(title: str, year: int, plot: str = "short", export: str = "false") -> None:
     """
     Fetch information about a movie.
     """
@@ -31,19 +41,87 @@ def movie_info(title: str, year: int, plot: str = "short") -> None:
     if year:
         params["y"] = year
 
-    res = req.get(base_url, params)
+    res = req.get(BASE_URL, params)
 
     if res.status_code == 200:
         data = res.json()
         # formated data
-        formatted_data = f"""
-        {{
-         🎬 Title: {data.get("Title")},
-         🗓️ Year: {data.get("Released")},
-         🎥 Plot: {data.get("Plot")},
-         🎭 Genre: {data.get("Genre")},
-         😎 Actors: {data.get("Actors")},
-         🧐 Director: {data.get("Director")},
-        }}'
-        """
+        type = data.get("Type")
+        if type == "movie":
+            formatted_data = f"""
+            {{
+            🎬 Title: {data.get("Title")},
+            🗓️ Year: {data.get("Released")},
+            🎥 Plot: {data.get("Plot")},
+            🎭 Genre: {data.get("Genre")},
+            😎 Actors: {data.get("Actors")},
+            🧐 Director: {data.get("Director")},
+            🍿 Type: {data.get("Type")}
+            }}'
+            """
+        else:
+            formatted_data = f"""
+            {{
+            🎬 Title: {data.get("Title")},
+            🗓️ Year: {data.get("Released")},
+            🎥 Plot: {data.get("Plot")},
+            🎭 Genre: {data.get("Genre")},
+            😎 Actors: {data.get("Actors")},
+            🧐 Director: {data.get("Director")},
+            📺 Type: {data.get("Type")},
+            🐽 Seasons: {data.get("totalSeasons")}
+            }}'
+            """
+
         click.echo(formatted_data)
+
+        if export == "true":
+            import csv
+
+            with open(EXPORT_PATH, "a") as expFile:
+                csv_writer = csv.writer(expFile)
+
+                if os.path.isfile(EXPORT_PATH):
+                    csv_writer.writerow(
+                        [
+                            "Title",
+                            "Year",
+                            "Plot",
+                            "Genre",
+                            "Actors",
+                            "Director",
+                            "Type",
+                            "Seasons",
+                        ]
+                    )
+                if data.get("Type") == "movie":
+                    csv_writer.writerow(
+                        [
+                            data.get("Title"),
+                            data.get("Released"),
+                            data.get("Plot"),
+                            data.get("Genre"),
+                            data.get("Actors"),
+                            data.get("Director"),
+                            data.get("Type"),
+                            "NA",
+                        ]
+                    )
+                else:
+                    csv_writer.writerow(
+                        [
+                            data.get("Title"),
+                            data.get("Released"),
+                            data.get("Plot"),
+                            data.get("Genre"),
+                            data.get("Actors"),
+                            data.get("Director"),
+                            data.get("Type"),
+                            data.get("totalSeasons"),
+                        ]
+                    )
+
+    elif res.status_code == 401:
+        raise Exception("🥷 You're not authorized.")
+    else:
+        raise Exception(f"Throwing error from request, {res.status_code}")
