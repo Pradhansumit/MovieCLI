@@ -35,4 +35,15 @@ def movie_info(title: str, year: int, plot: str = "short") -> None:
 
     if res.status_code == 200:
         data = res.json()
-        click.echo(data)
+        # formated data
+        formatted_data = f"""
+        {{
+         🎬 Title: {data.get("Title")},
+         🗓️ Year: {data.get("Released")},
+         🎥 Plot: {data.get("Plot")},
+         🎭 Genre: {data.get("Genre")},
+         😎 Actors: {data.get("Actors")},
+         🧐 Director: {data.get("Director")},
+        }}'
+        """
+        click.echo(formatted_data)
