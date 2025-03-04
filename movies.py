@@ -57,7 +57,7 @@ def info(title: str, year: int, plot: str = "short", export: str = "false") -> N
             😎 Actors: {data.get("Actors")},
             🧐 Director: {data.get("Director")},
             🍿 Type: {data.get("Type")}
-            }}'
+            }}
             """
         else:
             formatted_data = f"""
@@ -70,7 +70,7 @@ def info(title: str, year: int, plot: str = "short", export: str = "false") -> N
             🧐 Director: {data.get("Director")},
             📺 Type: {data.get("Type")},
             🐽 Seasons: {data.get("totalSeasons")}
-            }}'
+            }}
             """
 
         click.echo(formatted_data)
