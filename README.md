@@ -4,8 +4,8 @@ A **CLI tool** to fetch information about movies right to your cli. It is built 
 
 ## 🌟 Features
 
-✅ Search about your favourite Movie or TV-Show.
-✅ Export the search to a csv file.
+✅ Search about your favourite Movie or TV-Show.\
+✅ Export the search to a csv file.\
 ✅ Saves your api key in $HOME/.moviecli folder using Fernet encryption method.
 
 ## ⚠️Important
